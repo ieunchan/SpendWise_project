@@ -70,10 +70,12 @@ def category_expenses():
     user_data = pd.read_csv("financial_records.csv")
     spend_category_amount = user_data.groupby("지출형식")['금액'].sum()
 
+
     # 원형 그래프를 그리는 로직
-    # 람다 함수를 사용하여 퍼센트가 아닌 금액으로 표현하게 만들었음. 천단위마다 콤마 추가함.
     total_amount = int(spend_category_amount.sum())
-    plt.pie(spend_category_amount, labels=spend_category_amount.index, autopct=lambda pct: f"{pct:.0f}%\n({round(pct/100 * total_amount):,.0f}원)") # 소수점으로 나오는거 방지하려고 반올림 적용
+
+    # 원형그래프의 라벨의 갯수는 지출형식의 인덱스값, 표시하는 값은 람다함수를 이용해서 퍼센트가 아닌 전체사용금액, 가독성을 위해 각 영역이 살짝 떨어지게 만들었음
+    plt.pie(spend_category_amount, labels=spend_category_amount.index, autopct=lambda pct: f"{pct:.0f}%\n({round(pct/100 * total_amount):,.0f}원)", explode=[0.08] * len(spend_category_amount))
     plt.gca().set_title(f"지출형식별 금액\n(총합: {total_amount:,.0f}원)")
     plt.axis('equal')
     plt.savefig('원형그래프.png')
