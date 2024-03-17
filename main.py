@@ -5,7 +5,6 @@
 # 입력받은 데이터는 로컬환경에 텍스트 파일로 저장.
 # 전체 지출과 수입을 표시
 import streamlit as st
-import pandas as pd
 from pages import home, category_expenses, monthlyExpenseVariation
 
 if 'page' not in st.session_state:
