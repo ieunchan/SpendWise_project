@@ -14,24 +14,22 @@ def home():
     except FileNotFoundError:
         user_data = pd.DataFrame(columns=["날짜", "분류", "지출형식","금액"])
     
-    user_data['날짜'] = pd.to_datetime(user_data['날짜'].str.split().str[0], format='%Y-%m-%d') # '날짜' 열을 datetime 타입으로 변경
-
+    user_data['날짜'] = pd.to_datetime(user_data['날짜'].str.split().str[0], format='%Y-%m-%d')
+    
     # 메인화면에 날짜 선택
     selected_date = st.date_input("날짜를 선택하세요")
     st.write("선택한 날짜:", selected_date)
 
     # 이번달 총 지출금액 추출
-    expense_amounts = user_data[(user_data['분류'] == '지출') & (user_data['날짜'].dt.month == selected_date.month)]['금액']
-    total_expense = expense_amounts.sum()
-    total_expense = expense_amounts.sum()
-    total_expense = "{:,.0f}".format(total_expense) # 금액을 천단위마다 콤마추가
-    st.write('이번달 총 지출: ', total_expense,"원")
+    this_month_data = user_data[user_data['날짜'].dt.month == selected_date.month]
+    total_expense = this_month_data[this_month_data['분류'] == '지출']['금액'].sum()
+    total_expense = (f"{total_expense:,.0f}") # 금액을 천단위마다 콤마추가
+    st.markdown(f''':red[이번달 총 지출:  {total_expense}원]''')
 
     # 이번달 총 수입 추출
-    income_amounts = user_data[user_data['분류'] == '수입']['금액']
-    total_imcome = income_amounts.sum()
-    total_imcome = "{:,.0f}".format(total_imcome) # 금액을 천단위마다 콤마추가
-    st.write('이번달 총 수입: ',total_imcome,'원')
+    total_imcome = this_month_data[this_month_data['분류'] == '수입']['금액'].sum()
+    total_imcome = (f"{total_imcome:,.0f}") # 금액을 천단위마다 콤마추가
+    st.write(f':blue[이번달 총 수입: {total_imcome}원]')
 
     # 메인화면에 수입, 지출 선택
     option = st.selectbox('수입 혹은 지출 선택', ('수입', '지출'))
@@ -61,14 +59,19 @@ def category_expenses():
 
     st.title("세부 지출내용")
 
+    now = datetime.now()
+    this_month = now.month
+
     # 한글 폰트 적용
     font_path = "c:\WINDOWS\Fonts\MALGUN.TTF"
     font = font_manager.FontProperties(fname=font_path).get_name() 
     rc('font', family=font)
 
     # 사용자 데이터를 읽어와서 지출 금액을 빼옴
-    user_data = pd.read_csv("financial_records.csv")
-    spend_category_amount = user_data.groupby("지출형식")['금액'].sum()
+    user_data = pd.read_csv("financial_records.csv", parse_dates=['날짜'])
+    user_data['날짜'] = pd.to_datetime(user_data['날짜'].str.split().str[0], format='%Y-%m-%d')
+    this_month_data = user_data[user_data['날짜'].dt.month == this_month]
+    spend_category_amount = this_month_data.groupby("지출형식")['금액'].sum()
 
 
     # 원형 그래프를 그리는 로직
@@ -91,6 +94,3 @@ def category_expenses():
     for category, amount in expense_type.items():
         st.markdown(f"{rank}. {category}: {amount:,.0f}원")
         rank += 1
-def monthlyExpenseVariation():
-    st.title("전월대비 지출량 변화")
-    pass

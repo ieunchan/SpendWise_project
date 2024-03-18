@@ -5,12 +5,12 @@
 # 입력받은 데이터는 로컬환경에 텍스트 파일로 저장.
 # 전체 지출과 수입을 표시
 import streamlit as st
-from pages import home, category_expenses, monthlyExpenseVariation
+from pages import home, category_expenses
 
 if 'page' not in st.session_state:
     st.session_state['page'] = 'HOME'
 
-menues = {"HOME": home, "이번달 지출유형": category_expenses,"전월대비 지출량": monthlyExpenseVariation}
+menues = {"HOME": home, "이번달 지출유형": category_expenses}
 
 with st.sidebar:
     for menu in menues.keys():
