@@ -68,8 +68,9 @@ def category_expenses():
     rc('font', family=font)
 
     # 사용자 데이터를 읽어와서 지출 금액을 빼옴
-    user_data = pd.read_csv("financial_records.csv", parse_dates=['날짜'])
+    user_data = pd.read_csv("financial_records.csv")
     user_data['날짜'] = pd.to_datetime(user_data['날짜'].str.split().str[0], format='%Y-%m-%d')
+
     this_month_data = user_data[user_data['날짜'].dt.month == this_month]
     spend_category_amount = this_month_data.groupby("지출형식")['금액'].sum()
 
